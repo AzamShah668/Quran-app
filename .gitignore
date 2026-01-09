@@ -1,2 +1,23 @@
-/myenv
-/flask
+# --- Python / Flask ---
+__pycache__/
+*.py[cod]
+*$py.class
+myenv/
+venv/
+.env
+.flaskenv
+
+# --- Linux / System ---
+.DS_Store
+.directory
+*.swp
+*~
+
+# --- IDEs (VS Code) ---
+.vscode/
+.idea/
+
+# --- Project Specific ---
+classes.png
+packages.png
+classes.dot
