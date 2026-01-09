@@ -1,0 +1,175 @@
+<div class="container">
+    <div class="app-header">
+        <button onclick="loadPage('dashboard')" style="background:none; border:none; color:var(--primary-green); cursor:pointer; font-weight:bold; margin-bottom:10px;">← Back</button>
+        <h1 class="gradient-text">Quranic Library</h1>
+        <p style="color: var(--text-gray);">Browse 114 Surahs</p>
+    </div>
+
+    <div style="padding: 0 20px 30px 20px; width: 100%; max-width: 600px; margin: 0 auto;">
+        <input type="text" id="surahSearch" oninput="window.filterSurahs()" placeholder="Search by name or number..."
+               style="width: 100%; padding: 15px 25px; border-radius: 50px; border: 1px solid #eee; box-shadow: 0 5px 15px rgba(0,0,0,0.05); font-size: 1rem; outline: none;">
+    </div>
+
+    <div id="surahGrid" class="menu-grid"></div>
+</div>
+
+<script>
+    // 1. Full Data (Cleaned names to prevent crashes)
+    var surahList = [
+        {no: 1, name: "Al-Fatihah", mean: "The Opening"},
+        {no: 2, name: "Al-Baqarah", mean: "The Cow"},
+        {no: 3, name: "Ali 'Imran", mean: "Family of Imran"},
+        {no: 4, name: "An-Nisa'", mean: "The Women"},
+        {no: 5, name: "Al-Ma'idah", mean: "The Table Spread"},
+        {no: 6, name: "Al-An'am", mean: "The Cattle"},
+        {no: 7, name: "Al-A'raf", mean: "The Heights"},
+        {no: 8, name: "Al-Anfal", mean: "The Spoils of War"},
+        {no: 9, name: "At-Tawbah", mean: "The Repentance"},
+        {no: 10, name: "Yunus", mean: "Jonah"},
+        {no: 11, name: "Hud", mean: "Hud"},
+        {no: 12, name: "Yusuf", mean: "Joseph"},
+        {no: 13, name: "Ar-Ra'd", mean: "The Thunder"},
+        {no: 14, name: "Ibrahim", mean: "Abraham"},
+        {no: 15, name: "Al-Hijr", mean: "The Rocky Tract"},
+        {no: 16, name: "An-Nahl", mean: "The Bee"},
+        {no: 17, name: "Al-Isra'", mean: "The Night Journey"},
+        {no: 18, name: "Al-Kahf", mean: "The Cave"},
+        {no: 19, name: "Maryam", mean: "Mary"},
+        {no: 20, name: "Ta-Ha", mean: "Ta-Ha"},
+        {no: 21, name: "Al-Anbiya'", mean: "The Prophets"},
+        {no: 22, name: "Al-Hajj", mean: "The Pilgrimage"},
+        {no: 23, name: "Al-Mu'minun", mean: "The Believers"},
+        {no: 24, name: "An-Nur", mean: "The Light"},
+        {no: 25, name: "Al-Furqan", mean: "The Criterion"},
+        {no: 26, name: "Ash-Shu'ara'", mean: "The Poets"},
+        {no: 27, name: "An-Naml", mean: "The Ant"},
+        {no: 28, name: "Al-Qasas", mean: "The Stories"},
+        {no: 29, name: "Al-'Ankabut", mean: "The Spider"},
+        {no: 30, name: "Ar-Rum", mean: "The Romans"},
+        {no: 31, name: "Luqman", mean: "Luqman"},
+        {no: 32, name: "As-Sajdah", mean: "The Prostration"},
+        {no: 33, name: "Al-Ahzab", mean: "The Combined Forces"},
+        {no: 34, name: "Saba'", mean: "Sheba"},
+        {no: 35, name: "Fatir", mean: "The Originator"},
+        {no: 36, name: "Ya-Sin", mean: "Ya-Sin"},
+        {no: 37, name: "As-Saffat", mean: "Those who set the Ranks"},
+        {no: 38, name: "Sad", mean: "The Letter Saad"},
+        {no: 39, name: "Az-Zumar", mean: "The Troops"},
+        {no: 40, name: "Ghafir", mean: "The Forgiver"},
+        {no: 41, name: "Fussilat", mean: "Explained in Detail"},
+        {no: 42, name: "Ash-Shura", mean: "The Consultation"},
+        {no: 43, name: "Az-Zukhruf", mean: "The Ornaments of Gold"},
+        {no: 44, name: "Ad-Dukhan", mean: "The Smoke"},
+        {no: 45, name: "Al-Jathiyah", mean: "The Crouching"},
+        {no: 46, name: "Al-Ahqaf", mean: "The Wind-Curved Sandhills"},
+        {no: 47, name: "Muhammad", mean: "Muhammad"},
+        {no: 48, name: "Al-Fath", mean: "The Victory"},
+        {no: 49, name: "Al-Hujurat", mean: "The Dwellings"},
+        {no: 50, name: "Qaf", mean: "The Letter Qaf"},
+        {no: 51, name: "Adh-Dhariyat", mean: "The Winnowing Winds"},
+        {no: 52, name: "At-Tur", mean: "The Mount"},
+        {no: 53, name: "An-Najm", mean: "The Star"},
+        {no: 54, name: "Al-Qamar", mean: "The Moon"},
+        {no: 55, name: "Ar-Rahman", mean: "The Beneficent"},
+        {no: 56, name: "Al-Waqi'ah", mean: "The Inevitable"},
+        {no: 57, name: "Al-Hadid", mean: "The Iron"},
+        {no: 58, name: "Al-Mujadila", mean: "The Pleading Woman"},
+        {no: 59, name: "Al-Hashr", mean: "The Exile"},
+        {no: 60, name: "Al-Mumtahanah", mean: "The Examined One"},
+        {no: 61, name: "As-Saff", mean: "The Ranks"},
+        {no: 62, name: "Al-Jumu'ah", mean: "The Congregation"},
+        {no: 63, name: "Al-Munafiqun", mean: "The Hypocrites"},
+        {no: 64, name: "At-Taghabun", mean: "The Mutual Disillusion"},
+        {no: 65, name: "At-Talaq", mean: "The Divorce"},
+        {no: 66, name: "At-Tahrim", mean: "The Prohibition"},
+        {no: 67, name: "Al-Mulk", mean: "The Sovereignty"},
+        {no: 68, name: "Al-Qalam", mean: "The Pen"},
+        {no: 69, name: "Al-Haqqah", mean: "The Reality"},
+        {no: 70, name: "Al-Ma'arij", mean: "The Ascending Stairways"},
+        {no: 71, name: "Nuh", mean: "Noah"},
+        {no: 72, name: "Al-Jinn", mean: "The Jinn"},
+        {no: 73, name: "Al-Muzzammil", mean: "The Enshrouded One"},
+        {no: 74, name: "Al-Muddaththir", mean: "The Cloaked One"},
+        {no: 75, name: "Al-Qiyamah", mean: "The Resurrection"},
+        {no: 76, name: "Al-Insan", mean: "The Man"},
+        {no: 77, name: "Al-Mursalat", mean: "The Emissaries"},
+        {no: 78, name: "An-Naba'", mean: "The Tidings"},
+        {no: 79, name: "An-Nazi'at", mean: "Those Who Drag Forth"},
+        {no: 80, name: "'Abasa", mean: "He Frowned"},
+        {no: 81, name: "At-Takwir", mean: "The Overthrowing"},
+        {no: 82, name: "Al-Infitar", mean: "The Cleaving"},
+        {no: 83, name: "Al-Mutaffifin", mean: "The Defrauding"},
+        {no: 84, name: "Al-Inshiqaq", mean: "The Sundering"},
+        {no: 85, name: "Al-Buruj", mean: "The Mansions of Stars"},
+        {no: 86, name: "At-Tariq", mean: "The Nightcomer"},
+        {no: 87, name: "Al-A'la", mean: "The Most High"},
+        {no: 88, name: "Al-Ghashiyah", mean: "The Overwhelming"},
+        {no: 89, name: "Al-Fajr", mean: "The Dawn"},
+        {no: 90, name: "Al-Balad", mean: "The City"},
+        {no: 91, name: "Ash-Shams", mean: "The Sun"},
+        {no: 92, name: "Al-Layl", mean: "The Night"},
+        {no: 93, name: "Ad-Duha", mean: "The Morning Hours"},
+        {no: 94, name: "Ash-Sharh", mean: "The Relief"},
+        {no: 95, name: "At-Tin", mean: "The Fig"},
+        {no: 96, name: "Al-'Alaq", mean: "The Clot"},
+        {no: 97, name: "Al-Qadr", mean: "The Power"},
+        {no: 98, name: "Al-Bayyinah", mean: "The Clear Proof"},
+        {no: 99, name: "Az-Zalzalah", mean: "The Earthquake"},
+        {no: 100, name: "Al-'Adiyat", mean: "The Courser"},
+        {no: 101, name: "Al-Qari'ah", mean: "The Calamity"},
+        {no: 102, name: "At-Takathur", mean: "The Rivalry"},
+        {no: 103, name: "Al-'Asr", mean: "The Declining Day"},
+        {no: 104, name: "Al-Humazah", mean: "The Traducer"},
+        {no: 105, name: "Al-Fil", mean: "The Elephant"},
+        {no: 106, name: "Quraysh", mean: "Quraysh"},
+        {no: 107, name: "Al-Ma'un", mean: "The Small Kindnesses"},
+        {no: 108, name: "Al-Kawthar", mean: "The Abundance"},
+        {no: 109, name: "Al-Kafirun", mean: "The Disbelievers"},
+        {no: 110, name: "An-Nasr", mean: "The Divine Support"},
+        {no: 111, name: "Al-Masad", mean: "The Palm Fiber"},
+        {no: 112, name: "Al-Ikhlas", mean: "The Sincerity"},
+        {no: 113, name: "Al-Falaq", mean: "The Daybreak"},
+        {no: 114, name: "An-Nas", mean: "Mankind"}
+    ];
+
+    // 2. Navigation Function (Handles quotes safely)
+    window.loadSurah = function(id, name) {
+        localStorage.setItem('currentSurahId', id);
+        localStorage.setItem('currentSurahName', name);
+        if (typeof loadPage === 'function') {
+            loadPage('surah_view');
+        }
+    };
+
+    // 3. Search and Filter
+    window.filterSurahs = function() {
+        var term = document.getElementById('surahSearch')?.value.toLowerCase() || "";
+        var grid = document.getElementById('surahGrid');
+        if (!grid) return;
+
+        var filtered = surahList.filter(function(s) {
+            return s.name.toLowerCase().includes(term) || s.no.toString().includes(term);
+        });
+
+        // Use encodeURIComponent or replace single quotes to avoid SyntaxErrors
+        grid.innerHTML = filtered.map(function(s) {
+            var safeName = s.name.replace(/'/g, "\\'"); 
+            return `<div class="card" onclick="window.loadSurah('${s.no}', '${safeName}')">
+                    <div class="card-icon">${s.no}</div>
+                    <div class="card-info">
+                        <h3>${s.name}</h3>
+                        <p style="color: #666; font-size: 0.85rem;">${s.mean}</p>
+                    </div>
+                </div>`;
+        }).join('');
+    };
+
+    // 4. Initial Trigger
+    if (window.libTimer) clearInterval(window.libTimer);
+    window.libTimer = setInterval(function() {
+        if (document.getElementById('surahGrid')) {
+            window.filterSurahs();
+            clearInterval(window.libTimer);
+        }
+    }, 50);
+</script>
