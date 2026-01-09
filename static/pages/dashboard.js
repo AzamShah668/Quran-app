@@ -100,22 +100,15 @@ async function fetchDua() {
 // 5. Surah Library Logic
 async function openLibrary() {
     await loadPage('content');
-    const title = document.getElementById("content-title");
     const display = document.getElementById("dynamic-content");
+    display.innerHTML = "Loading Surah List...";
 
-    title.innerText = "Quranic Library";
+    // For now, let's keep it simple with a list of common names or just the numbers.
+    // If you want the names on the buttons, we can fetch 'SELECT DISTINCT surah_name' from the DB.
     
-    // Create a responsive grid for 114 Surahs
-    let listHtml = `
-        <p style="text-align:center; color:#666;">Select a Surah to read in full</p>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; padding: 10px; max-height: 60vh; overflow-y: auto;">
-    `;
-    
+    let listHtml = `<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">`;
     for (let i = 1; i <= 114; i++) {
-        listHtml += `
-            <button onclick="readFullSurah(${i})" style="padding: 12px; background: #f0fdf4; border: 1px solid #1a531b; border-radius: 8px; cursor: pointer; font-weight: 600; color: #1a531b; transition: 0.2s;">
-                ${i}
-            </button>`;
+        listHtml += `<button onclick="readFullSurah(${i})" style="padding:10px; border-radius:8px;">Surah ${i}</button>`;
     }
     listHtml += `</div>`;
     display.innerHTML = listHtml;

@@ -1,41 +1,62 @@
+/**
+ * MAIN.JS - START ON WELCOME
+ */
+
 async function loadPage(pageName) {
+    // 1. If pageName is empty (first visit), use 'welcome'
+    const target = pageName || 'welcome';
+    
     const viewport = document.getElementById('app-viewport');
+    
+    // Prevent double-loading the same page
+    if (viewport.dataset.currentPage === target) return;
 
     try {
-        // CHANGE HERE: We remove './pages/' and '.html' 
-        // We call the Flask route '/pages/dashboard' instead of the file path
-        const response = await fetch(`/pages/${pageName}`);
-
-        if (!response.ok) throw new Error('Server returned an error');
+        const response = await fetch(`/pages/${target}`);
+        
+        if (!response.ok) {
+            console.error("Page not found:", target);
+            // If welcome is missing, then go to dashboard as backup
+            if (target === 'welcome') return loadPage('dashboard');
+            return;
+        }
 
         const html = await response.text();
-
-        // Inject the HTML into your index.html's viewport
         viewport.innerHTML = html;
+        viewport.dataset.currentPage = target;
 
-        // Remember this page for refresh
-        localStorage.setItem('alpine_current_page', pageName);
-
-        // Always scroll to the top
-        window.scrollTo(0, 0);
-
+        // Sync the URL
+        if (window.location.hash !== `#${target}`) {
+            history.pushState({ page: target }, "", `#${target}`);
+        }
     } catch (err) {
-        console.error("Error loading page:", err);
-        viewport.innerHTML = `<div style="text-align:center; padding-top:50px;">
-                                <h1>Connection Error</h1>
-                                <p>Could not load: ${pageName}</p>
-                              </div>`;
+        console.error("Navigation error:", err);
     }
 }
 
-// Initial Load logic remains the same
+// THIS SECTION CONTROLS WHAT SHOWS UP FIRST
 window.addEventListener('DOMContentLoaded', () => {
-    const savedPage = localStorage.getItem('alpine_current_page') || 'welcome';
-    loadPage(savedPage);
+    const hash = window.location.hash.replace('#', '');
+    
+    // If user has a specific link (like #library), go there.
+    // OTHERWISE: Start on 'welcome'
+    if (hash) {
+        loadPage(hash);
+    } else {
+        loadPage('welcome'); 
+    }
 });
 
-function logout() {
-    localStorage.removeItem('alpine_is_logged_in');
-    localStorage.removeItem('alpine_current_page');
-    loadPage('login');
-}
+window.onpopstate = (e) => {
+    const page = (e.state && e.state.page) ? e.state.page : 'welcome';
+    loadPage(page);
+};
+
+// --- BACK BUTTON ---
+window.onpopstate = function(event) {
+    if (event.state && event.state.page) {
+        loadPage(event.state.page);
+    } else {
+        loadPage('dashboard');
+    }
+};
