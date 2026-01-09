@@ -97,3 +97,58 @@ async function fetchDua() {
             display.innerText = "‘Rabbi zidni 'ilma’ (My Lord, increase me in knowledge.)";
         });
 }
+// 5. Surah Library Logic
+async function openLibrary() {
+    await loadPage('content');
+    const title = document.getElementById("content-title");
+    const display = document.getElementById("dynamic-content");
+
+    title.innerText = "Quranic Library";
+    
+    // Create a responsive grid for 114 Surahs
+    let listHtml = `
+        <p style="text-align:center; color:#666;">Select a Surah to read in full</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; padding: 10px; max-height: 60vh; overflow-y: auto;">
+    `;
+    
+    for (let i = 1; i <= 114; i++) {
+        listHtml += `
+            <button onclick="readFullSurah(${i})" style="padding: 12px; background: #f0fdf4; border: 1px solid #1a531b; border-radius: 8px; cursor: pointer; font-weight: 600; color: #1a531b; transition: 0.2s;">
+                ${i}
+            </button>`;
+    }
+    listHtml += `</div>`;
+    display.innerHTML = listHtml;
+}
+
+async function readFullSurah(surahNo) {
+    const display = document.getElementById("dynamic-content");
+    display.innerHTML = "<div style='text-align:center;'><em>Opening the Book...</em></div>";
+    document.getElementById("content-title").innerText = `Surah ${surahNo}`;
+
+    try {
+        const response = await fetch(`/api/surah/${surahNo}`);
+        const data = await response.json();
+
+        let surahHtml = `<div style="padding: 10px;">`;
+        data.forEach(ayah => {
+            surahHtml += `
+                <div style="margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                    <div style="text-align: right; font-size: 22px; color: #1a531b; direction: rtl; line-height: 1.8; margin-bottom: 10px;">
+                        ${ayah.text_arabic} <span style="font-size: 14px; color: #888;">[${ayah.ayah_number}]</span>
+                    </div>
+                    <div style="font-size: 16px; color: #333; text-align: left; line-height: 1.5;">
+                        ${ayah.text_english}
+                    </div>
+                </div>`;
+        });
+        surahHtml += `
+            <button onclick="openLibrary()" style="width: 100%; padding: 15px; background: #1a531b; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 20px;">
+                Back to Library
+            </button>
+        </div>`;
+        display.innerHTML = surahHtml;
+    } catch (err) {
+        display.innerHTML = "Failed to load Surah. Please check database connection.";
+    }
+}
