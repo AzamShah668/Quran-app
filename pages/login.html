@@ -1,0 +1,40 @@
+<section class="view active">
+    <div class="branding-header" style="background: #004445; padding-top: 60px;">
+        <div class="branding-content" style="text-align: center; color: white;">
+            <p class="presenter-text" style="letter-spacing: 2px; font-size: 0.8rem; opacity: 0.8;">SECURE ACCESS</p>
+            <h2 class="app-tagline" style="font-size: 2.2rem; font-weight: 800; margin-top: 10px;">Sign In</h2>
+        </div>
+        
+        <div class="wave-container" style="line-height: 0; margin-top: 40px;">
+            <svg viewBox="0 0 1440 320" preserveAspectRatio="none" style="height: 100px; width: 100%;">
+                <path fill="#ffffff" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+    </div>
+
+    <div class="welcome-container" style="margin-top: -30px; padding: 20px;">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; background: white; padding: 40px 20px; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); max-width: 400px; margin: 0 auto;">
+            
+            <div style="text-align: center; margin-bottom: 10px;">
+                <p style="color: #666; font-size: 0.9rem;">Please enter your credentials to continue</p>
+            </div>
+
+            <input type="text" id="username" placeholder="Username" class="login-input" 
+                style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #eee; background: #f9f9f9;">
+            
+            <input type="password" id="password" placeholder="Password" class="login-input" 
+                style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #eee; background: #f9f9f9;">
+            
+            <button class="main-cta" onclick="handleLogin()" 
+                style="width: 100%; padding: 15px; background: #2c786c; color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">
+                Login
+            </button>
+            
+            <p id="login-error" style="color: #d63031; display: none; font-size: 0.85rem; font-weight: 600;">Invalid credentials, please try again.</p>
+
+            <button onclick="loadPage('dashboard')" style="background: none; border: none; color: #999; cursor: pointer; font-size: 0.9rem; margin-top: 10px;">
+                Cancel and return to dashboard
+            </button>
+        </div>
+    </div>
+</section>
